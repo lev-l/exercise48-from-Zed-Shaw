@@ -1,5 +1,5 @@
 from nose.tools import *
-from ex48 import lexicon
+from ex48 import lexicon, parser
 
 
 def test_directions():
@@ -67,8 +67,8 @@ def test_errors():
 						('noun', 'princess')])
 
 def test_sentence():
-	assert_equal(lexicon.scan("Bear open the door to the cabinet ,adf"),
-					[('noun', 'bear'),
+	result = lexicon.scan("Bear open the door to the cabinet ,adf")
+	assert_equal(result,[('noun', 'bear'),
 					('verb', 'open'),
 					('stop', 'the'),
 					('noun', 'door'),
@@ -76,3 +76,26 @@ def test_sentence():
 					('stop', 'the'),
 					('noun', 'cabinet'),
 					('error', ',adf')])
+	
+	sentence = parser.return_sentence(result)
+	assert_equal(sentence.subject, "bear")
+	assert_equal(sentence.verb, "open")
+	assert_equal(sentence.object, "door")
+	
+	result = lexicon.scan('open the door')
+	sentence = parser.return_sentence(result)
+	assert_equal(sentence.subject, "player")
+	assert_equal(sentence.verb, "open")
+	assert_equal(sentence.object, "door")
+	
+	result = lexicon.scan('go north')
+	sentence = parser.return_sentence(result)
+	assert_equal(sentence.subject, "player")
+	assert_equal(sentence.verb, "go")
+	assert_equal(sentence.object, "north")
+	
+	result = lexicon.scan('Kill bear')
+	sentence = parser.return_sentence(result)
+	assert_equal(sentence.subject, "player")
+	assert_equal(sentence.verb, "kill")
+	assert_equal(sentence.object, "bear")
